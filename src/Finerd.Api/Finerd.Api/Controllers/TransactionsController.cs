@@ -44,7 +44,7 @@ namespace Finerd.Api.Controllers
             {
                 return UnprocessableEntity(result);
             }
-            var photo = Upload(Request.Form.Files[0], model.Id);
+            var photo = Upload(Request, model.Id);
             if (string.IsNullOrEmpty(photo))
             {
                 result.Transaction.Photo = photo;
@@ -65,7 +65,7 @@ namespace Finerd.Api.Controllers
             {
                 return UnprocessableEntity(result);
             }
-            var photo = Upload(Request.Form.Files[0], model.Id);
+            var photo = Upload(Request, model.Id);
             if (string.IsNullOrEmpty(photo))
             {
                 result.Transaction.Photo = photo;
@@ -86,10 +86,11 @@ namespace Finerd.Api.Controllers
         }
 
 
-        string Upload(IFormFile file, int transactionId)
+        string Upload(HttpRequest request, int transactionId)
         {
             try
             {
+                var file = request.Form.Files[0];
                 var folderName = Path.Combine("Resources", "Images");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                 if (file.Length > 0)

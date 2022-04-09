@@ -62,16 +62,13 @@ namespace Finerd.Api.Controllers
                     ErrorCode = "R01"
                 });
             }
-
             var validateRefreshTokenResponse = await tokenService.ValidateRefreshTokenAsync(refreshTokenRequest);
-
             if (!validateRefreshTokenResponse.Success)
             {
                 return UnprocessableEntity(validateRefreshTokenResponse);
             }
 
             var tokenResponse = await tokenService.GenerateTokensAsync(validateRefreshTokenResponse.UserId);
-
             return Ok(new { AccessToken = tokenResponse.Item1, Refreshtoken = tokenResponse.Item2 });
         }
 
@@ -92,9 +89,7 @@ namespace Finerd.Api.Controllers
                     });
                 }
             }
-
             var signupResponse = await userService.SignupAsync(signupRequest);
-
             if (!signupResponse.Success)
             {
                 return UnprocessableEntity(signupResponse);
@@ -102,18 +97,43 @@ namespace Finerd.Api.Controllers
             return Ok(signupResponse.Email);
         }
 
-      
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, UserDto profile)
+        {
+            if (id != profile.Id)
+                return BadRequest($"{nameof(id)}");
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(x => x.Errors.Select(c => c.ErrorMessage)).ToList();
+                if (errors.Any())
+                {
+                    return BadRequest(new TokenResponse
+                    {
+                        Error = $"{string.Join(",", errors)}",
+                        ErrorCode = "S01"
+                    });
+                }
+            }
+            var signupResponse = await userService.ProfileAsync(profile);
+            if (!signupResponse.Success)
+            {
+                return UnprocessableEntity(signupResponse);
+            }
+            return Ok(signupResponse.Email);
+        }
+
+
         [HttpPost]
         [Route("logout")]
         public async Task<IActionResult> Logout()
         {
             var logout = await userService.LogoutAsync(UserID);
-
             if (!logout.Success)
             {
                 return UnprocessableEntity(logout);
             }
-
             return Ok();
         }
     }

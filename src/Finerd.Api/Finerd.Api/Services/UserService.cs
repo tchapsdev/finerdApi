@@ -129,13 +129,46 @@ namespace Finerd.Api.Services
 
             if (saveResponse >= 0)
             {
-                return new SignupResponse { Success = true, Email = user.Email };
+                return new SignupResponse { Success = true, Email = user.Email , Id = user.Id};
             }
 
             return new SignupResponse
             {
                 Success = false,
                 Error = "Unable to save the user",
+                ErrorCode = "S05"
+            };
+
+        }
+
+
+        public async Task<SignupResponse> ProfileAsync(UserDto signupRequest)
+        {
+            var email = signupRequest.Email?.ToUpper() ?? "";
+            var existingUser = await transactionsDbContext.Users.SingleOrDefaultAsync(user => user.Email.ToUpper() == email || user.Id == signupRequest.Id);
+            if (existingUser == null)
+            {
+                return new SignupResponse
+                {
+                    Success = false,
+                    Error = "User dos not exist with the same email",
+                    ErrorCode = "S02"
+                };
+            }
+            existingUser.FirstName = signupRequest.FirstName;
+            existingUser.LastName = signupRequest.LastName;
+            transactionsDbContext.Users.Update(existingUser);
+            var saveResponse = await transactionsDbContext.SaveChangesAsync();
+
+            if (saveResponse >= 0)
+            {
+                return new SignupResponse { Success = true, Email = existingUser.Email , Id = existingUser.Id};
+            }
+
+            return new SignupResponse
+            {
+                Success = false,
+                Error = "Unable to save the user profile",
                 ErrorCode = "S05"
             };
 
