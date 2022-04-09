@@ -23,6 +23,7 @@ namespace Finerd.Api.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("login")]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
@@ -75,6 +76,7 @@ namespace Finerd.Api.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("signup")]
         public async Task<IActionResult> Signup(SignupRequest signupRequest)
         {
@@ -97,11 +99,10 @@ namespace Finerd.Api.Controllers
             {
                 return UnprocessableEntity(signupResponse);
             }
-
             return Ok(signupResponse.Email);
         }
 
-        [Authorize]
+      
         [HttpPost]
         [Route("logout")]
         public async Task<IActionResult> Logout()

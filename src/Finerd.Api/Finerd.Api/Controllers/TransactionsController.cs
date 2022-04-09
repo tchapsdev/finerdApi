@@ -7,7 +7,6 @@ using System.Net.Http.Headers;
 
 namespace Finerd.Api.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TransactionsController : BaseApiController
