@@ -87,7 +87,7 @@ namespace Finerd.Api.Controllers
         }
 
 
-        public string Upload(IFormFile file, int transactionId)
+        string Upload(IFormFile file, int transactionId)
         {
             try
             {
