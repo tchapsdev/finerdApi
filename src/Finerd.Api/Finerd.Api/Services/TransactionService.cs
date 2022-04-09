@@ -73,7 +73,7 @@ namespace Finerd.Api.Services
                 if (!string.IsNullOrEmpty(transaction.Photo))
                     model.Photo = transaction.Photo;
                 model.UpdatedAt = DateTime.UtcNow;
-                _applicationDbContext.Transactions.Update(transaction);
+                _applicationDbContext.Transactions.Update(model);
             }
             else {
                 transaction.UpdatedAt = DateTime.UtcNow;
