@@ -2,9 +2,9 @@
 
 namespace Finerd.Api.Model.Responses
 {
-    public class DeleteTaskResponse : BaseResponse
+    public class DeleteEntityResponse : BaseResponse
     {
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int TaskId { get; set; }
+        public int Id { get; set; }
     }
 }
