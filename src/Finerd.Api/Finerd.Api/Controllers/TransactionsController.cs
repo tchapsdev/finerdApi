@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Finerd.Api.Hubs;
 using Finerd.Api.Model.Entities;
 using Finerd.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Net.Http.Headers;
 
 namespace Finerd.Api.Controllers
@@ -14,12 +16,13 @@ namespace Finerd.Api.Controllers
         private readonly ITransactionService TransactionService;
         private readonly ILogger<HeathController> _logger;
         private readonly IMapper _mapper;
-
-        public TransactionsController(ITransactionService TransactionService, ILogger<HeathController> logger, IMapper mapper)
+        private readonly IHubContext<NotificationHub, INotificationClient> _notificationHubContext;
+        public TransactionsController(ITransactionService TransactionService, ILogger<HeathController> logger, IMapper mapper, IHubContext<NotificationHub, INotificationClient> notificationHubContext)
         {
             this.TransactionService = TransactionService;
             _logger = logger;
             _mapper = mapper;
+            _notificationHubContext = notificationHubContext;
         }
 
         [HttpGet]

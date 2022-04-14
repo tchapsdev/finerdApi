@@ -1,4 +1,5 @@
 using Finerd.Api.Data;
+using Finerd.Api.Hubs;
 using Finerd.Api.Model;
 using Finerd.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,6 +29,40 @@ using Microsoft.OpenApi.Models;
                     ValidIssuer = jwtSettings.Issuer,
                     ValidAudience = jwtSettings.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(jwtSettings.AccessTokenSecret))                    
+                };
+
+                // Configure the Authority to the expected value for
+                // the authentication provider. This ensures the token
+                // is appropriately validated.
+               // options.Authority = "Authority URL"; // TODO: Update URL
+
+                // We have to hook the OnMessageReceived event in order to
+                // allow the JWT authentication handler to read the access
+                // token from the query string when a WebSocket or 
+                // Server-Sent Events request comes in.
+
+                // Sending the access token in the query string is required due to
+                // a limitation in Browser APIs. We restrict it to only calls to the
+                // SignalR hub in this code.
+                // See https://docs.microsoft.com/aspnet/core/signalr/security#access-token-logging
+                // for more information about security considerations when using
+                // the query string to transmit the access token.
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/hubs/chat")))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
     builder.Services.AddAuthorization();
@@ -75,7 +110,13 @@ using Microsoft.OpenApi.Models;
 
     builder.Services.AddAutoMapper(typeof(Program));
 
-var app = builder.Build();
+    builder.Services.AddSignalR();
+
+
+    var app = builder.Build();
+
+
+    app.MapHub<NotificationHub>("/pushNotification");
 
     // Configure the HTTP request pipeline.
     //if (app.Environment.IsDevelopment())
@@ -84,6 +125,7 @@ var app = builder.Build();
     //    app.UseSwaggerUI();
     //}
     // Todo: Hide the Swagger after API fully tested. 
+
     app.UseSwagger();
     app.UseSwaggerUI();
 
@@ -92,6 +134,6 @@ var app = builder.Build();
     app.UseAuthentication();
     app.UseAuthorization();
 
-app.MapControllers();
+    app.MapControllers();
 
     app.Run();

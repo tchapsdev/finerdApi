@@ -1,9 +1,11 @@
-﻿using Finerd.Api.Model;
+﻿using Finerd.Api.Hubs;
+using Finerd.Api.Model;
 using Finerd.Api.Model.Responses;
 using Finerd.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Finerd.Api.Controllers
 {
@@ -14,12 +16,14 @@ namespace Finerd.Api.Controllers
         private readonly IUserService userService;
         private readonly ITokenService tokenService;
         private readonly ILogger<UsersController> _logger;
+        private readonly IHubContext<NotificationHub, INotificationClient> _notificationHubContext;
 
-        public UsersController(IUserService userService, ITokenService tokenService, ILogger<UsersController> logger)
+        public UsersController(IUserService userService, ITokenService tokenService, ILogger<UsersController> logger, IHubContext<NotificationHub, INotificationClient> notificationHubContext)
         {
             this.userService = userService;
             this.tokenService = tokenService;
             _logger = logger;
+            _notificationHubContext = notificationHubContext;
         }
 
         [HttpPost]
@@ -94,6 +98,8 @@ namespace Finerd.Api.Controllers
             {
                 return UnprocessableEntity(signupResponse);
             }
+            await _notificationHubContext.Clients.Clients($"{signupResponse.Id}").ReceiveMessage("privateMessage", "You account was created. Please confirm your email");
+
             return Ok(signupResponse.Email);
         }
 
