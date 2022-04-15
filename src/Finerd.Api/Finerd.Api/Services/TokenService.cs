@@ -50,7 +50,7 @@ namespace Finerd.Api.Services
             }
             userRecord.RefreshTokens?.Add(new RefreshToken
             {
-                ExpiryDate = DateTime.Now.AddDays(30),
+                ExpiryDate = DateTime.Now.AddDays(60),
                 Ts = DateTime.Now,
                 UserId = userId,
                 TokenHash = refreshTokenHashed,
