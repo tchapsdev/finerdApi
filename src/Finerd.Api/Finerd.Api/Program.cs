@@ -103,6 +103,17 @@ using Microsoft.OpenApi.Models;
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<ITransactionService, TransactionService>();
 
+    // CORS with default policy and middleware
+    builder.Services.AddCors(options =>
+    {
+        options.AddDefaultPolicy(
+            policy =>
+            {
+                policy.WithOrigins("http://localhost:3000",
+                                    "https://finerd-tchapsdev.vercel.app");
+            });
+    });
+
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
@@ -130,6 +141,8 @@ using Microsoft.OpenApi.Models;
     app.UseSwaggerUI();
 
     app.UseHttpsRedirection();
+
+    app.UseCors();
 
     app.UseAuthentication();
     app.UseAuthorization();
