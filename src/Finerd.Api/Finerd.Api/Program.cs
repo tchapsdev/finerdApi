@@ -110,7 +110,9 @@ using Microsoft.OpenApi.Models;
             policy =>
             {
                 policy.WithOrigins("http://localhost:3000",
-                                    "https://finerd-tchapsdev.vercel.app");
+                                    "https://finerd-tchapsdev.vercel.app")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
             });
     });
 
