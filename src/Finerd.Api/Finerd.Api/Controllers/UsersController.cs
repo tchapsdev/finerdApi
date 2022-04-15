@@ -55,6 +55,7 @@ namespace Finerd.Api.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("refresh_token")]
         public async Task<IActionResult> RefreshToken(RefreshTokenRequest refreshTokenRequest)
         {
