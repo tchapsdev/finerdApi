@@ -55,8 +55,7 @@ using Microsoft.OpenApi.Models;
 
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/hubs/chat")))
+                        if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/finerdHub")))
                         {
                             // Read the token out of the query string
                             context.Token = accessToken;
@@ -129,7 +128,7 @@ using Microsoft.OpenApi.Models;
     var app = builder.Build();
 
 
-    app.MapHub<NotificationHub>("/pushNotification");
+    app.MapHub<NotificationHub>("/finerdHub");
 
     // Configure the HTTP request pipeline.
     //if (app.Environment.IsDevelopment())
