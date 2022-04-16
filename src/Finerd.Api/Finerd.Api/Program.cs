@@ -116,6 +116,7 @@ using Microsoft.OpenApi.Models;
                 //        .AllowAnyMethod().AllowAnyOrigin();
                 policy.AllowAnyHeader()
                       .AllowAnyMethod()
+                      .SetIsOriginAllowed(origin => true) // allow any origin
                       .AllowAnyOrigin();
                       
             });
