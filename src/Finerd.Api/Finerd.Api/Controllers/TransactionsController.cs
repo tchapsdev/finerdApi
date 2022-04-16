@@ -64,7 +64,7 @@ namespace Finerd.Api.Controllers
             }
         }
 
-        [HttpGet("transactiontype/{typeId}")]
+        [HttpGet("findAllByType/{typeId}")]
         public async Task<IActionResult> GetByType(string typeId)
         {
             var result = await TransactionService.Get(UserID);
