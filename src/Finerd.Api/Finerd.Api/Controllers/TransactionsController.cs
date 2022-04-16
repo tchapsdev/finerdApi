@@ -84,11 +84,12 @@ namespace Finerd.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(TransactionDto transaction)
         {
+            transaction.UserId = UserID;
             var model = _mapper.Map<Transaction>(transaction);
             await SetTransactionTypeId(transaction, model);
             await SetCategoryId(transaction, model);
             await SetPaymentMethodId(transaction, model);
-            transaction.UserId = UserID;
+           
             var result = await TransactionService.Save(model, UserID);
             if (!result.Success)
             {
@@ -113,11 +114,11 @@ namespace Finerd.Api.Controllers
             if (id != transaction.Id)
                 return BadRequest();
 
+            transaction.UserId = UserID;
             var model = _mapper.Map<Transaction>(transaction);
             await SetTransactionTypeId(transaction, model);
             await SetCategoryId(transaction, model);
             await SetPaymentMethodId(transaction, model);
-            transaction.UserId = UserID;
 
             var result = await TransactionService.Save(model, UserID);
             if (!result.Success)
