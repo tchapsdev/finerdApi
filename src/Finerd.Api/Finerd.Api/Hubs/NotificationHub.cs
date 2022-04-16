@@ -10,15 +10,27 @@ namespace Finerd.Api.Hubs
 
         public async Task SendMessageToCaller(string user, string message) => await Clients.Caller.ReceiveMessage(user, message);
 
-        public async Task SendMessageToGroup(string user, string message) => await Clients.Group("SignalR Users").ReceiveMessage(user, message);
+        public async Task SendMessageToGroup(string user, string message) => await Clients.Group("Finerd Users").ReceiveMessage(user, message);
+
+        //public override async Task OnConnectedAsync()
+        //{
+        //    await Clients.All.ReceiveMessage("ReceiveSystemMessage", $"{Context.UserIdentifier} joined.");
+        //    //await Clients.All.SendAsync("ReceiveSystemMessage", $"{Context.UserIdentifier} joined.");
+        //    await base.OnConnectedAsync();
+        //}
 
         public override async Task OnConnectedAsync()
         {
-            await Clients.All.ReceiveMessage("ReceiveSystemMessage", $"{Context.UserIdentifier} joined.");
-            //await Clients.All.SendAsync("ReceiveSystemMessage", $"{Context.UserIdentifier} joined.");
+            await Groups.AddToGroupAsync(Context.ConnectionId, "Finerd Users");
+            await Clients.Caller.ReceiveMessage(Context.UserIdentifier, $"{Context.UserIdentifier} joined  Finerd Users Group");
             await base.OnConnectedAsync();
         }
 
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, "Finerd Users");
+            await base.OnDisconnectedAsync(exception);
+        }
 
         //public async Task SendMessage(string user, string message)
         //{
