@@ -24,13 +24,13 @@ namespace Finerd.Api.Controllers
         [HttpPost("{message}")]
         public async void Post(string message)
         {
-            await _notificationHubContext.Clients.All.ReceiveMessage("publicMessage", message);
+            await _notificationHubContext.Clients.All.ReceiveMessage("Finerd Broadcast", message);
         }
 
         [HttpPost("{connectionId}/{message}")]
         public async void Post(string connectionId, string message)
         {
-            await _notificationHubContext.Clients.Clients(connectionId).ReceiveMessage("privateMessage", message);
+            await _notificationHubContext.Clients.Clients(connectionId).ReceiveMessage(connectionId, message);
         }
 
         [HttpPost]
