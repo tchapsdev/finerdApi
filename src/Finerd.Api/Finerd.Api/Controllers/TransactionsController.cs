@@ -150,7 +150,7 @@ namespace Finerd.Api.Controllers
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                 if (file.Length > 0)
                 {
-                    var fileName = transactionId + ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                    var fileName = transactionId + ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName?.Trim('"');
                     var fullPath = Path.Combine(pathToSave, fileName);
                     var dbPath = Path.Combine(folderName, fileName);
                     using (var stream = new FileStream(fullPath, FileMode.Create))
@@ -174,10 +174,11 @@ namespace Finerd.Api.Controllers
         {
             if (model.CategoryId > 0)
                 return;
-            var category = _categoryService.Query().Where(t => t.Name.Trim().ToLower() == transaction.Type.Trim().ToLower()).FirstOrDefault();
+            var category = _categoryService.Query().Where(t => t.Name.Trim().ToLower() == transaction.Category?.Trim().ToLower()).FirstOrDefault();
             if (category == null)
             {
-                category = await _categoryService.Add(new Category { Name = transaction.Category.Trim() });
+                if (!string.IsNullOrEmpty(transaction.Category))
+                    category = await _categoryService.Add(new Category { Name = transaction.Category.Trim() });
             }
             model.CategoryId = category != null ? category.Id : 0;
         }
@@ -186,10 +187,11 @@ namespace Finerd.Api.Controllers
         {
             if (model.TransactionTypeId > 0)
                 return;
-            var transactionType = _transactionTypeService.Query().Where(t => t.Name.Trim().ToLower() == transaction.Type.Trim().ToLower()).FirstOrDefault();
+            var transactionType = _transactionTypeService.Query().Where(t => t.Name.Trim().ToLower() == transaction.Type?.Trim().ToLower()).FirstOrDefault();
             if (transactionType == null)
             {
-                transactionType = await _transactionTypeService.Add(new TransactionType { Name = transaction.Type.Trim() });
+                if (!string.IsNullOrEmpty(transaction.Type))
+                    transactionType = await _transactionTypeService.Add(new TransactionType { Name = transaction.Type.Trim() });
             }
             model.TransactionTypeId = transactionType != null ? transactionType.Id : 0;
         }
@@ -197,12 +199,13 @@ namespace Finerd.Api.Controllers
         {
             if (model.PaymentMethodId > 0)
                 return;
-            var paymentMethod = _paymentMethodService.Query().Where(t => t.Name.Trim().ToLower() == transaction.PaymentMethod.Trim().ToLower()).FirstOrDefault();
+            var paymentMethod = _paymentMethodService.Query().Where(t => t.Name.Trim().ToLower() == transaction.PaymentMethod?.Trim().ToLower()).FirstOrDefault();
             if (paymentMethod == null)
             {
-                paymentMethod = await _paymentMethodService.Add(new PaymentMethod { Name = transaction.PaymentMethod.Trim() });
+                if (!string.IsNullOrEmpty(transaction.PaymentMethod))
+                    paymentMethod = await _paymentMethodService.Add(new PaymentMethod { Name = transaction.PaymentMethod.Trim() });
             }
-            model.PaymentMethodId = paymentMethod == null || paymentMethod.Id == 0 ? null : paymentMethod.Id;
+            model.PaymentMethodId = paymentMethod?.Id == null || paymentMethod.Id == 0 ? null : paymentMethod.Id;
         }
         #endregion
 
