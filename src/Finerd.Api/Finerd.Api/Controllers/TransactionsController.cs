@@ -42,6 +42,8 @@ namespace Finerd.Api.Controllers
                 return UnprocessableEntity(result);
             }
             var modelDtos = _mapper.Map<IList<TransactionDto>>(result.Transactions);
+            if (modelDtos == null)
+                return Ok(new { data = new List<TransactionDto>() });
             SetTransactionDtoParameters(modelDtos);
             return Ok(modelDtos);
         }
@@ -100,7 +102,7 @@ namespace Finerd.Api.Controllers
             var modelDto = _mapper.Map<TransactionDto>(result.Transaction);
             modelDto.Type = transaction.Type;
             modelDto.Category = transaction.Category;
-            return Ok(model);
+            return Ok(modelDto);
         }
 
 
@@ -126,7 +128,10 @@ namespace Finerd.Api.Controllers
                 result.Transaction.Photo = photo;
                 await TransactionService.Save(result.Transaction, UserID);
             }
-            return Ok(_mapper.Map<TransactionDto>(result.Transaction));
+            var modelDto = _mapper.Map<TransactionDto>(result.Transaction);
+            modelDto.Type = transaction.Type;
+            modelDto.Category = transaction.Category;
+            return Ok(modelDto);
         }
 
         [HttpDelete("{id}")]
