@@ -65,7 +65,7 @@ namespace Finerd.Api.Controllers
             }
             await _notificationHubContext.Clients.Clients($"{signupResponse.Id}").ReceiveMessage(signupRequest.FirstName, "Your account was created. Please confirm your email");
 
-            return Ok(signupResponse.Email);
+            return Ok(signupResponse);
         }
 
 
@@ -92,7 +92,7 @@ namespace Finerd.Api.Controllers
             {
                 return UnprocessableEntity(signupResponse);
             }
-            return Ok(signupResponse.Email);
+            return Ok(signupResponse);
         }
 
 
