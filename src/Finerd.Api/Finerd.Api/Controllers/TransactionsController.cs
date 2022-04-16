@@ -36,6 +36,17 @@ namespace Finerd.Api.Controllers
             return Ok(_mapper.Map<IList<TransactionDto>>(result.Transactions));
         }
 
+        [HttpGet("transactiontype/{transactionTypeId}")]
+        public async Task<IActionResult> GetByType(int transactionTypeId)
+        {
+            var result = await TransactionService.Get(UserID);
+            if (!result.Success)
+            {
+                return UnprocessableEntity(result);
+            }
+            return Ok(_mapper.Map<IList<TransactionDto>>(result.Transactions.Where(t => t.TransactionTypeId == transactionTypeId).ToList()));
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Post(TransactionDto transaction)
