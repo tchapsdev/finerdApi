@@ -108,12 +108,16 @@ using Microsoft.OpenApi.Models;
         options.AddDefaultPolicy(
             policy =>
             {
-                policy.WithOrigins("http://localhost:3000",
-                                    "https://finerd-tchapsdev.vercel.app",
-                                    "http://finerd-api.tchapssolution.com",
-                                    "https://finerd-api.tchapssolution.com")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod().AllowAnyOrigin();
+                //policy.WithOrigins("http://localhost:3000",
+                //                    "https://finerd-tchapsdev.vercel.app",
+                //                    "http://finerd-api.tchapssolution.com",
+                //                    "https://finerd-api.tchapssolution.com")
+                //        .AllowAnyHeader()
+                //        .AllowAnyMethod().AllowAnyOrigin();
+                policy.AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowAnyOrigin();
+                      
             });
     });
 
