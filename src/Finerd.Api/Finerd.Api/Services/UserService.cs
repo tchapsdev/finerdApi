@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finerd.Api.Services
 {
-    public class UserService : IUserService
+    public class UserService : GenericService<User>, IUserService
     {
         private readonly ApplicationDbContext transactionsDbContext;
         private readonly ITokenService tokenService;
 
-        public UserService(ApplicationDbContext transactionsDbContext, ITokenService tokenService)
+        public UserService(ApplicationDbContext transactionsDbContext, ITokenService tokenService) : base(transactionsDbContext)
         {
             this.transactionsDbContext = transactionsDbContext;
             this.tokenService = tokenService;

@@ -4,7 +4,7 @@ using Finerd.Api.Model.Responses;
 
 namespace Finerd.Api.Services
 {
-    public interface IUserService
+    public interface IUserService: IGenericService<User>
     {
         Task<TokenResponse> LoginAsync(LoginRequest loginRequest);
         Task<SignupResponse> SignupAsync(SignupRequest signupRequest);

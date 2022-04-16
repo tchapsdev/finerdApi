@@ -143,5 +143,21 @@ namespace Finerd.Api.Controllers
             }
             return Ok();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var user = await userService.FindAsync(UserID) ?? new Model.Entities.User();
+            user.Password = "";
+            user.PasswordSalt = "";
+            return Ok(new
+            {
+                user.Id,
+                user.Email,
+                user.FirstName,
+                user.LastName,
+                user.Active
+            });
+        }
     }
 }
