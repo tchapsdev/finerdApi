@@ -97,9 +97,9 @@ namespace Finerd.Api.Controllers
                 return UnprocessableEntity(result);
             }
             var photo = Upload(Request, model.Id);
-            if (string.IsNullOrEmpty(photo))
+            if (!string.IsNullOrEmpty(photo))
             {
-                result.Transaction.Photo = photo?? "";
+                result.Transaction.Photo = photo;
                 await TransactionService.Save(result.Transaction, UserID);
             }
             var modelDto = _mapper.Map<TransactionDto>(result.Transaction);
@@ -128,9 +128,9 @@ namespace Finerd.Api.Controllers
                 return UnprocessableEntity(result);
             }
             var photo = Upload(Request, model.Id);
-            if (string.IsNullOrEmpty(photo))
+            if (!string.IsNullOrEmpty(photo))
             {
-                result.Transaction.Photo = photo ?? "";
+                result.Transaction.Photo = photo;
                 await TransactionService.Save(result.Transaction, UserID);
             }
             var modelDto = _mapper.Map<TransactionDto>(result.Transaction);
