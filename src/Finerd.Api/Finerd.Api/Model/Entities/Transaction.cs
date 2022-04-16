@@ -12,7 +12,6 @@
 
 
         public int? PaymentMethodId { get; set; }
-        public PaymentMethod PaymentMethod { get; set; }
 
         public int UserId { get; set; }
         public virtual User User { get; set; }

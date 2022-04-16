@@ -26,6 +26,7 @@ namespace Finerd.Api.Controllers
             });
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("/.well-known/pki-validation/starfield.html")]
         public IActionResult Getstarfield()
         {

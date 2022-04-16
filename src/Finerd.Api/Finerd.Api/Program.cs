@@ -1,6 +1,7 @@
 using Finerd.Api.Data;
 using Finerd.Api.Hubs;
 using Finerd.Api.Model;
+using Finerd.Api.Model.Entities;
 using Finerd.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -101,9 +102,12 @@ using Microsoft.OpenApi.Models;
     builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultDbConnectionString")));
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<ITransactionService, TransactionService>();
+    builder.Services.AddScoped<IGenericService<Category>, GenericService<Category>>();
+    builder.Services.AddScoped<IGenericService<TransactionType>, GenericService<TransactionType>>();
+    builder.Services.AddScoped<IGenericService<PaymentMethod>, GenericService<PaymentMethod>>();
 
-    // CORS with default policy and middleware
-    builder.Services.AddCors(options =>
+// CORS with default policy and middleware
+builder.Services.AddCors(options =>
     {
         options.AddDefaultPolicy(
             policy =>
