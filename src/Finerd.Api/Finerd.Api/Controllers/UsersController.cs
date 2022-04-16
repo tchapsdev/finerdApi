@@ -63,7 +63,7 @@ namespace Finerd.Api.Controllers
             {
                 return UnprocessableEntity(signupResponse);
             }
-            await _notificationHubContext.Clients.Clients($"{signupResponse.Id}").ReceiveMessage(signupRequest.FirstName, "Your account was created. Please confirm your email");
+            await _notificationHubContext.Clients.Group($"G{signupResponse.Id}").ReceiveMessage(signupRequest.FirstName, "Your account was created. Please confirm your email");
 
             return Ok(signupResponse);
         }
