@@ -26,6 +26,76 @@ namespace Finerd.Api.Controllers
             _notificationHubContext = notificationHubContext;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var user = await userService.FindAsync(UserID) ?? new Model.Entities.User();
+            user.Password = "";
+            user.PasswordSalt = "";
+            return Ok(new
+            {
+                user.Id,
+                user.Email,
+                user.FirstName,
+                user.LastName,
+                user.Active
+            });
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Post(SignupRequest signupRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(x => x.Errors.Select(c => c.ErrorMessage)).ToList();
+                if (errors.Any())
+                {
+                    return BadRequest(new TokenResponse
+                    {
+                        Error = $"{string.Join(",", errors)}",
+                        ErrorCode = "S01"
+                    });
+                }
+            }
+            var signupResponse = await userService.SignupAsync(signupRequest);
+            if (!signupResponse.Success)
+            {
+                return UnprocessableEntity(signupResponse);
+            }
+            await _notificationHubContext.Clients.Clients($"{signupResponse.Id}").ReceiveMessage(signupRequest.FirstName, "Your account was created. Please confirm your email");
+
+            return Ok(signupResponse.Email);
+        }
+
+
+        [HttpPut]
+        public async Task<IActionResult> Put(UserDto profile)
+        {
+            if (UserID != profile.Id)
+                return BadRequest($"{nameof(UserID)}");
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(x => x.Errors.Select(c => c.ErrorMessage)).ToList();
+                if (errors.Any())
+                {
+                    return BadRequest(new TokenResponse
+                    {
+                        Error = $"{string.Join(",", errors)}",
+                        ErrorCode = "S01"
+                    });
+                }
+            }
+            var signupResponse = await userService.ProfileAsync(profile);
+            if (!signupResponse.Success)
+            {
+                return UnprocessableEntity(signupResponse);
+            }
+            return Ok(signupResponse.Email);
+        }
+
+
         [HttpPost]
         [AllowAnonymous]
         [Route("login")]
@@ -77,59 +147,6 @@ namespace Finerd.Api.Controllers
             return Ok(new { AccessToken = tokenResponse.Item1, Refreshtoken = tokenResponse.Item2 });
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        [Route("signup")]
-        public async Task<IActionResult> Signup(SignupRequest signupRequest)
-        {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values.SelectMany(x => x.Errors.Select(c => c.ErrorMessage)).ToList();
-                if (errors.Any())
-                {
-                    return BadRequest(new TokenResponse
-                    {
-                        Error = $"{string.Join(",", errors)}",
-                        ErrorCode = "S01"
-                    });
-                }
-            }
-            var signupResponse = await userService.SignupAsync(signupRequest);
-            if (!signupResponse.Success)
-            {
-                return UnprocessableEntity(signupResponse);
-            }
-            await _notificationHubContext.Clients.Clients($"{signupResponse.Id}").ReceiveMessage(signupRequest.FirstName, "Your account was created. Please confirm your email");
-
-            return Ok(signupResponse.Email);
-        }
-
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, UserDto profile)
-        {
-            if (id != profile.Id)
-                return BadRequest($"{nameof(id)}");
-
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values.SelectMany(x => x.Errors.Select(c => c.ErrorMessage)).ToList();
-                if (errors.Any())
-                {
-                    return BadRequest(new TokenResponse
-                    {
-                        Error = $"{string.Join(",", errors)}",
-                        ErrorCode = "S01"
-                    });
-                }
-            }
-            var signupResponse = await userService.ProfileAsync(profile);
-            if (!signupResponse.Success)
-            {
-                return UnprocessableEntity(signupResponse);
-            }
-            return Ok(signupResponse.Email);
-        }
 
 
         [HttpPost]
@@ -144,20 +161,6 @@ namespace Finerd.Api.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            var user = await userService.FindAsync(UserID) ?? new Model.Entities.User();
-            user.Password = "";
-            user.PasswordSalt = "";
-            return Ok(new
-            {
-                user.Id,
-                user.Email,
-                user.FirstName,
-                user.LastName,
-                user.Active
-            });
-        }
+       
     }
 }
