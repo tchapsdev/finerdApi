@@ -22,7 +22,7 @@ namespace Finerd.Api.Hubs
         public override async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, "Finerd Users");
-            await Clients.Caller.ReceiveMessage(Context.UserIdentifier, $"{Context.UserIdentifier} joined  Finerd Users Group");
+            await Clients.Caller.ReceiveMessage(Context.UserIdentifier, $"{Context.UserIdentifier} joined Hub Finerd Users Group");
             await base.OnConnectedAsync();
         }
 
