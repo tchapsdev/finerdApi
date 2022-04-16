@@ -77,7 +77,7 @@ namespace Finerd.Api.Services
 
         public async Task<SignupResponse> SignupAsync(SignupRequest signupRequest)
         {
-            var existingUser = await transactionsDbContext.Users.SingleOrDefaultAsync(user => user.Email == signupRequest.Email);
+            var existingUser = await transactionsDbContext.Users.SingleOrDefaultAsync(user => user.Email.ToUpper() == signupRequest.Email.ToUpper());
 
             if (existingUser != null)
             {
@@ -145,7 +145,7 @@ namespace Finerd.Api.Services
         public async Task<SignupResponse> ProfileAsync(UserDto signupRequest)
         {
             var email = signupRequest.Email?.ToUpper() ?? "";
-            var existingUser = await transactionsDbContext.Users.SingleOrDefaultAsync(user => user.Email.ToUpper() == email || user.Id == signupRequest.Id);
+            var existingUser = await transactionsDbContext.Users.SingleOrDefaultAsync(user => user.Email.ToUpper() == email.ToUpper() || user.Id == signupRequest.Id);
             if (existingUser == null)
             {
                 return new SignupResponse
@@ -171,6 +171,12 @@ namespace Finerd.Api.Services
                 Error = "Unable to save the user profile",
                 ErrorCode = "S05"
             };
+
+        }
+
+        public async Task<User> GetByEmailAsync(string email)
+        {
+            return await transactionsDbContext.Users.SingleOrDefaultAsync(user => user.Email.ToUpper() == email.ToUpper());       
 
         }
     }
