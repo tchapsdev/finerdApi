@@ -145,11 +145,17 @@ using Microsoft.OpenApi.Models;
     //}
     // Todo: Hide the Swagger after API fully tested. 
 
-    app.UseSwagger();
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Error");
+        app.UseHsts();
+    }
+
+app.UseSwagger();
     app.UseSwaggerUI();
 
     app.UseHttpsRedirection();
-app.UseStaticFiles();
+//app.UseStaticFiles();
 
 app.UseCors();
 
