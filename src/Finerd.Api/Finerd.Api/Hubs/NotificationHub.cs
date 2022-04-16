@@ -12,17 +12,16 @@ namespace Finerd.Api.Hubs
 
         public async Task SendMessageToGroup(string user, string message) => await Clients.Group("Finerd Users").ReceiveMessage(user, message);
 
-        //public override async Task OnConnectedAsync()
-        //{
-        //    await Clients.All.ReceiveMessage("ReceiveSystemMessage", $"{Context.UserIdentifier} joined.");
-        //    //await Clients.All.SendAsync("ReceiveSystemMessage", $"{Context.UserIdentifier} joined.");
-        //    await base.OnConnectedAsync();
-        //}
 
         public override async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, "Finerd Users");
-            await Clients.Caller.ReceiveMessage(Context.UserIdentifier, $"{Context.User.Identity} joined Hub Finerd Users Group");
+            var userName = "Guest";
+            if (Context.User?.Identity != null &&  Context.User.Identity.IsAuthenticated)
+            {
+                userName = $"{Context.User?.Identity?.Name} ({Context.UserIdentifier})";
+            }
+            await Clients.Caller.ReceiveMessage(userName, $"subscribe to Finerd's Hub Broascasting push notification");
             await base.OnConnectedAsync();
         }
 
