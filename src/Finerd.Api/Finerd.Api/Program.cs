@@ -113,12 +113,12 @@ using Microsoft.OpenApi.Models;
                 //                    "http://finerd-api.tchapssolution.com",
                 //                    "https://finerd-api.tchapssolution.com")
                 //        .AllowAnyHeader()
-                //        .AllowAnyMethod().AllowAnyOrigin();
+                //        .AllowAnyMethod();
                 policy.AllowAnyHeader()
                       .AllowAnyMethod()
                       .SetIsOriginAllowed(origin => true) // allow any origin
                       .AllowAnyOrigin();
-                      
+
             });
     });
 
