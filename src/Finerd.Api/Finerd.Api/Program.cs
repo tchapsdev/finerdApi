@@ -149,8 +149,9 @@ using Microsoft.OpenApi.Models;
     app.UseSwaggerUI();
 
     app.UseHttpsRedirection();
+app.UseStaticFiles();
 
-    app.UseCors();
+app.UseCors();
 
     app.UseAuthentication();
     app.UseAuthorization();

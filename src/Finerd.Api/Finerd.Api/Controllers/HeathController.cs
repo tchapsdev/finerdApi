@@ -25,5 +25,11 @@ namespace Finerd.Api.Controllers
                 Version = "1.0"
             });
         }
+
+        [HttpGet("/.well-known/pki-validation/starfield.html")]
+        public IActionResult Getstarfield()
+        {
+            return Ok("ainhn0koois7l03cpkgarva5ek");
+        }
     }
 }
