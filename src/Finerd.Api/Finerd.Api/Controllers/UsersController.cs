@@ -42,7 +42,7 @@ namespace Finerd.Api.Controllers
             });
         }
 
-        [HttpPost]
+        [HttpPost("signup")]
         [AllowAnonymous]
         public async Task<IActionResult> Post(SignupRequest signupRequest)
         {
