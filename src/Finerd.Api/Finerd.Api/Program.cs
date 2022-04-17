@@ -140,6 +140,7 @@ builder.Services.AddCors(options =>
         hubOptions.EnableDetailedErrors = true;
         // If the server hasn't sent a message within this interval, a ping message is sent automatically to keep the connection open. 
         hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(3);
+        hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(6);
     });
 
     builder.Services.AddHostedService<FinerdHubService>();
