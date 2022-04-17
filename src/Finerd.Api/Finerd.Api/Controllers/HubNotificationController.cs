@@ -7,7 +7,7 @@ namespace Finerd.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PushNotificationController : ControllerBase
+    public class HubNotificationController : ControllerBase
     {
         //IHubContext<NotificationHub> _hubContext;
         //public NotificationController(IHubContext<NotificationHub> hubContext)
@@ -16,7 +16,7 @@ namespace Finerd.Api.Controllers
         //}
 
         public IHubContext<NotificationHub, INotificationClient> _notificationHubContext { get; }
-        public PushNotificationController(IHubContext<NotificationHub, INotificationClient> notificationHubContext)
+        public HubNotificationController(IHubContext<NotificationHub, INotificationClient> notificationHubContext)
         {
             _notificationHubContext = notificationHubContext;
         }

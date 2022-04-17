@@ -1,3 +1,4 @@
+using Finerd.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Finerd.Api.Controllers
@@ -6,17 +7,20 @@ namespace Finerd.Api.Controllers
     [Route("[controller]")]
     public class HeathController : ControllerBase
     {
-      
         private readonly ILogger<HeathController> _logger;
 
-        public HeathController(ILogger<HeathController> logger)
+        private readonly IPushNotificationService _pushNotificationService;
+
+        public HeathController(ILogger<HeathController> logger, IPushNotificationService pushNotificationService)
         {
             _logger = logger;
+            _pushNotificationService = pushNotificationService;
         }
 
         [HttpGet]
         public IActionResult Get()
         {
+            var x = _pushNotificationService.SendNotification(new PushNotification.PushSubscription { }, "paylod");
             return Ok(new
             {
                 Application = "Finerd",
