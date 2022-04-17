@@ -86,6 +86,7 @@ namespace Finerd.Api.Controllers
         {
             transaction.UserId = UserID;
             transaction.Photo = "";
+            transaction.Description = transaction.Description ?? "";
             var model = _mapper.Map<Transaction>(transaction);
             await SetTransactionTypeId(transaction, model);
             await SetCategoryId(transaction, model);
@@ -117,6 +118,7 @@ namespace Finerd.Api.Controllers
 
             transaction.UserId = UserID;
             transaction.Photo = "";
+            transaction.Description = transaction.Description ?? "";
             var model = _mapper.Map<Transaction>(transaction);
             await SetTransactionTypeId(transaction, model);
             await SetCategoryId(transaction, model);
