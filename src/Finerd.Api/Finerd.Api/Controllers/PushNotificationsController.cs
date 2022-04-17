@@ -37,7 +37,7 @@ namespace Finerd.Api.Controllers
         }
 
         // DELETE push-notifications-api/subscriptions?endpoint={endpoint}
-        [HttpPost("subscriptions?payload={payload}")]
+        [HttpPost("subscriptions/{payload}")]
         public async Task<IActionResult> SendNotification(string payload, [FromBody] PushSubscription subscription)
         {
             await _pushNotificationService.SendNotification(subscription, payload);
