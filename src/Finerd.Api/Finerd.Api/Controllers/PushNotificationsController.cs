@@ -25,7 +25,6 @@ namespace Finerd.Api.Controllers
         public async Task<IActionResult> StoreSubscription([FromBody] PushSubscription subscription)
         {
             await _subscriptionStore.StoreSubscriptionAsync(subscription);
-
             return NoContent();
         }
 
