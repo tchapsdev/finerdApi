@@ -139,7 +139,7 @@ builder.Services.AddCors(options =>
         // If true, detailed exception messages are returned to clients when an exception is thrown in a Hub method.
         hubOptions.EnableDetailedErrors = true;
         // If the server hasn't sent a message within this interval, a ping message is sent automatically to keep the connection open. 
-        hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
+        hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(3);
     });
 
     builder.Services.AddHostedService<FinerdHubService>();
