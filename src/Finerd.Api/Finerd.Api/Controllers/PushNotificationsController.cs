@@ -41,7 +41,7 @@ namespace Finerd.Api.Controllers
         [HttpPost("subscriptions?payload={payload}")]
         public async Task<IActionResult> SendNotification(string payload, [FromBody] PushSubscription subscription)
         {
-            await _pushNotificationService.SendNotification(new PushNotification.PushSubscription { }, payload);
+            await _pushNotificationService.SendNotification(subscription, payload);
             return NoContent();
         }
     }
