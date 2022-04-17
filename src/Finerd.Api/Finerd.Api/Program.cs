@@ -140,6 +140,9 @@ builder.Services.AddCors(options =>
         hubOptions.EnableDetailedErrors = true;
         // If the server hasn't sent a message within this interval, a ping message is sent automatically to keep the connection open. 
         hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(3);
+        // The server considers the client disconnected if it hasn't received a message (including keep-alive) in this interval.
+        // It could take longer than this timeout interval for the client to be marked disconnected due to how this is implemented.
+        // The recommended value is double the KeepAliveInterval value.
         hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(6);
     });
 
