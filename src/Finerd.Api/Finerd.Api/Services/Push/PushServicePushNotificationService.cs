@@ -19,6 +19,7 @@ namespace Finerd.Api.Services.Push
            // _pushClient = pushClient;
             _subscriptionStoreAccessorProvider = subscriptionStoreAccessorProvider;
             _logger = logger;
+            _pushClient = new PushServiceClient();
         }
 
         public Task SendNotificationAsync(PushSubscription subscription, PushMessage message)
@@ -30,7 +31,7 @@ namespace Finerd.Api.Services.Push
         {
             try
             {
-                _pushClient = new PushServiceClient();
+                //_pushClient = new PushServiceClient();
                 await _pushClient.RequestPushMessageDeliveryAsync(subscription, message, cancellationToken);
             }
             catch (Exception ex)
