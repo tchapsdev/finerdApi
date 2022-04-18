@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-//https://www.tpeczek.com/2017/12/push-notifications-and-aspnet-core-part.html
+// https://www.tpeczek.com/2017/12/push-notifications-and-aspnet-core-part.html
+// https://github.com/web-push-libs/web-push-csharp
 namespace Finerd.Api.Controllers
 {
     [Route("api/[controller]")]
