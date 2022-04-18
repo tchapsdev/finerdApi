@@ -39,7 +39,7 @@ namespace Finerd.Api.PushNotification
                                     await notifyService.SendNotificationAsync(x, messageToSend);
                                 });
 #if DEBUG
-                await Task.Delay(1000 * 60 * 1);
+                await Task.Delay(1000 * 60 * 5);
 #else
                 await Task.Delay(1000 * 60 * 10);
 #endif
