@@ -1,5 +1,6 @@
 ﻿using Finerd.Api.PushNotification;
 using Lib.Net.Http.WebPush;
+using Microsoft.Extensions.Options;
 using System.Net;
 using PushSubscription = Lib.Net.Http.WebPush.PushSubscription;
 
@@ -10,16 +11,19 @@ namespace Finerd.Api.Services.Push
         private  PushServiceClient _pushClient;
         private readonly IPushSubscriptionStoreAccessorProvider _subscriptionStoreAccessorProvider;
         private readonly ILogger _logger;
+        private readonly PushNotificationServiceOptions _options;
 
         public string PublicKey { get { return _pushClient.DefaultAuthentication.PublicKey; } }
 
         public PushServicePushNotificationService( IPushSubscriptionStoreAccessorProvider subscriptionStoreAccessorProvider, 
-            ILogger<PushServicePushNotificationService> logger)
+            ILogger<PushServicePushNotificationService> logger, IOptions<PushNotificationServiceOptions> optionsAccessor)
         {
            // _pushClient = pushClient;
             _subscriptionStoreAccessorProvider = subscriptionStoreAccessorProvider;
             _logger = logger;
+            _options = optionsAccessor.Value;
             _pushClient = new PushServiceClient();
+            _pushClient.DefaultAuthentication = new Lib.Net.Http.WebPush.Authentication.VapidAuthentication(_options.PublicKey, _options.PrivateKey);
         }
 
         public Task SendNotificationAsync(PushSubscription subscription, PushMessage message)
