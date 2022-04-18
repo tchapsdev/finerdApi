@@ -51,10 +51,11 @@ namespace Finerd.Api.Controllers
         [HttpPost("subscriptions/sendMessage")]
         public async Task<IActionResult> SendNotification(string message)
         {
+            var mesageToSend = new Lib.Net.Http.WebPush.PushMessage(message);
             _logger.LogInformation($@"{DateTime.Now.ToString("U")} - SendNotification. UserID ({UserID}) Sending Finerd NotificationHubService to all user
-                                    message: {message}");
+                                    message: {JsonConvert.SerializeObject(mesageToSend)}");
             await _subscriptionStore.ForEachSubscriptionAsync(
-                        async (PushSubscription subscription) => await _pushNotificationService.SendNotificationAsync(subscription, new Lib.Net.Http.WebPush.PushMessage(message))
+                        async (PushSubscription subscription) => await _pushNotificationService.SendNotificationAsync(subscription, mesageToSend)
                     );            
             return NoContent();
         }
