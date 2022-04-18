@@ -151,6 +151,7 @@ namespace Finerd.Api.Controllers
 
         [HttpPost]
         [Route("logout")]
+        [AllowAnonymous]
         public async Task<IActionResult> Logout()
         {
             var logout = await userService.LogoutAsync(UserID);
