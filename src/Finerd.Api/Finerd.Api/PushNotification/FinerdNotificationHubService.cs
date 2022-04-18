@@ -19,7 +19,7 @@ namespace Finerd.Api.PushNotification
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation($"{DateTime.Now.ToString("U")} - Sending Finerd NotificationHubService to user");
-                var message = "Thank you for using Finerd App. This aplication is free with Ads!";
+                var message = "Thank you for using Finerd App. This application is free with Ads!";
                 var messageToSend = new Lib.Net.Http.WebPush.PushMessage(message);
                 using var scope = _serviceScopeFactory.CreateScope();
                 var notifyService = scope.ServiceProvider.GetRequiredService<IPushNotificationService>();
@@ -30,7 +30,7 @@ namespace Finerd.Api.PushNotification
                                     _logger.LogInformation($"{x.UserId} - {message}");
                                     await notifyService.SendNotificationAsync(x, messageToSend);
                                 });
-                await Task.Delay(1000 * 60 * 1);
+                await Task.Delay(1000 * 60 * 10);
             }
         }
     }
