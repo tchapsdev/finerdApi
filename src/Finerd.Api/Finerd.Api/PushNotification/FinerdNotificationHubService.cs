@@ -1,4 +1,6 @@
 ﻿using Finerd.Api.Services.Push;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace Finerd.Api.PushNotification
 {
@@ -19,9 +21,18 @@ namespace Finerd.Api.PushNotification
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation($"{DateTime.Now.ToString("U")} - Sending Finerd NotificationHubService to user");
-                var message = "Thank you for using Finerd App. This application is free with Ads!";
-                var messageToSend = new Lib.Net.Http.WebPush.PushMessage(message);
-                messageToSend.Topic = "Finerd Ads";
+                var message = "This application is free with Ads! Support us accepting ads in this Apps";
+                var data = new
+                {
+                    Title = "Thank you for choosing finerd",
+                    Message = message
+                };
+                var ContentMessage = new StringContent($"{JsonConvert.SerializeObject(data)}",
+                                        Encoding.UTF8,
+                                        "application/json");//CONTENT-TYPE header;
+                var messageToSend = new Lib.Net.Http.WebPush.PushMessage(ContentMessage);
+                
+                messageToSend.Topic = "Thank you for choosing finerd";
                 using var scope = _serviceScopeFactory.CreateScope();
                 var notifyService = scope.ServiceProvider.GetRequiredService<IPushNotificationService>();
                 var storeService = scope.ServiceProvider.GetRequiredService<IPushSubscriptionStore>();

@@ -2,6 +2,8 @@
 using Lib.Net.Http.WebPush;
 using Microsoft.Extensions.Options;
 using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using PushSubscription = Lib.Net.Http.WebPush.PushSubscription;
 
 namespace Finerd.Api.Services.Push
@@ -22,7 +24,7 @@ namespace Finerd.Api.Services.Push
             _subscriptionStoreAccessorProvider = subscriptionStoreAccessorProvider;
             _logger = logger;
             _options = optionsAccessor.Value;
-            _pushClient = new PushServiceClient();
+            _pushClient = new PushServiceClient(GetHttpClientHeader());
             _pushClient.DefaultAuthentication = new Lib.Net.Http.WebPush.Authentication.VapidAuthentication(_options.PublicKey, _options.PrivateKey);
         }
 
@@ -36,6 +38,7 @@ namespace Finerd.Api.Services.Push
             try
             {
                 //_pushClient = new PushServiceClient();
+               
                 await _pushClient.RequestPushMessageDeliveryAsync(subscription, message, cancellationToken);
             }
             catch (Exception ex)
@@ -63,6 +66,16 @@ namespace Finerd.Api.Services.Push
                     _logger?.LogInformation("Subscription has expired or is no longer valid and has been removed.");
                 }
             }
+        }
+
+        private HttpClient GetHttpClientHeader()
+        {
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header
+            //client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
+            return client;
         }
     }
 }

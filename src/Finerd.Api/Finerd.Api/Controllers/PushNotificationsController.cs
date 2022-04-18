@@ -4,6 +4,7 @@ using Finerd.Api.Services.Push;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Text;
 
 // https://www.tpeczek.com/2017/12/push-notifications-and-aspnet-core-part.html
 // https://github.com/web-push-libs/web-push-csharp
@@ -51,8 +52,16 @@ namespace Finerd.Api.Controllers
         [HttpPost("subscriptions/sendMessage")]
         public async Task<IActionResult> SendNotification(string message)
         {
-            var messageToSend = new Lib.Net.Http.WebPush.PushMessage(message);
-            messageToSend.Topic = "Finerd";
+            var data = new
+            {
+                Title = "Thank you for choosing finerd",
+                Message = message
+            };
+            var ContentMessage = new StringContent($"{JsonConvert.SerializeObject(data)}",
+                                    Encoding.UTF8,
+                                    "application/json");//CONTENT-TYPE header;
+            var messageToSend = new Lib.Net.Http.WebPush.PushMessage(ContentMessage);
+            messageToSend.Topic = "Thank you for choosing finerd";
             _logger.LogInformation($@"{DateTime.Now.ToString("U")} - SendNotification. UserID ({UserID}) Sending Finerd NotificationHubService to all user
                                     message: {JsonConvert.SerializeObject(messageToSend)}");
             await _subscriptionStore.ForEachSubscriptionAsync(
