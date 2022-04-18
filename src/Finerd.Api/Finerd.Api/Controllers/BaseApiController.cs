@@ -9,7 +9,21 @@ namespace Finerd.Api.Controllers
     [Authorize]
     public class BaseApiController : ControllerBase
     {
-        protected int UserID => int.Parse(FindClaim(ClaimTypes.NameIdentifier));
+        protected int UserID
+        {
+            get
+            {
+                try
+                {
+                    return int.Parse(FindClaim(ClaimTypes.NameIdentifier));
+
+                }
+                catch (Exception)
+                {
+                    return -1;
+                }
+            }
+        }
         private string FindClaim(string claimName)
         {
             var claimsIdentity = HttpContext.User.Identity as ClaimsIdentity;

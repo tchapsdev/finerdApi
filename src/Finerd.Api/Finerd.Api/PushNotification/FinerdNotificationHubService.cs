@@ -30,7 +30,7 @@ namespace Finerd.Api.PushNotification
                                     _logger.LogInformation($"{x.UserId} - {message}");
                                     await notifyService.SendNotificationAsync(x, messageToSend);
                                 });
-                await Task.Delay(1000 * 60 * 5);
+                await Task.Delay(1000 * 60 * 1);
             }
         }
     }

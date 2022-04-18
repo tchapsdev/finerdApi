@@ -1,6 +1,7 @@
 ﻿using Finerd.Api.PushNotification;
 using Finerd.Api.Services;
 using Finerd.Api.Services.Push;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -9,6 +10,7 @@ namespace Finerd.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class PushNotificationsController : BaseApiController
     {
         private readonly IPushSubscriptionStore _subscriptionStore;

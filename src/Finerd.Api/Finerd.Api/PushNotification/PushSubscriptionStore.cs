@@ -13,15 +13,21 @@ namespace Finerd.Api.PushNotification
 
         public Task StoreSubscriptionAsync(PushSubscription subscription)
         {
-            _database.Add(subscription);
-            _database.SaveChanges();
+            if(!_database.PushSubscriptions.Any(p => p.Endpoint == subscription.Endpoint))
+            {
+                _database.Add(subscription);
+                _database.SaveChanges();
+            }          
             return Task.CompletedTask;
         }
 
         public Task DiscardSubscriptionAsync(string endpoint)
         {
-            _database.Remove(endpoint);
-            _database.SaveChanges();
+            if (_database.PushSubscriptions.Any(p => p.Endpoint == endpoint))
+            {
+                _database.Remove(endpoint);
+                _database.SaveChanges();
+            }           
             return Task.CompletedTask;
         }
 
