@@ -2,6 +2,7 @@
 using Finerd.Api.Services;
 using Finerd.Api.Services.Push;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 //https://www.tpeczek.com/2017/12/push-notifications-and-aspnet-core-part.html
 namespace Finerd.Api.Controllers
@@ -28,7 +29,8 @@ namespace Finerd.Api.Controllers
         {
             subscription.UserId = UserID.ToString();
             await _subscriptionStore.StoreSubscriptionAsync(subscription);
-            _logger.LogInformation($"{DateTime.Now.ToString("U")} - UserID ({UserID}) Sending Finerd NotificationHubService to user");
+            _logger.LogInformation($@"{DateTime.Now.ToString("U")} - StoreSubscription. UserID ({UserID}) Subscription to Finerd NotificationHubService
+                                            subscription: {JsonConvert.SerializeObject(subscription)}");
             return NoContent();
         }
 
@@ -36,6 +38,8 @@ namespace Finerd.Api.Controllers
         [HttpDelete("subscriptions")]
         public async Task<IActionResult> DiscardSubscription(string endpoint)
         {
+            _logger.LogInformation($@"{DateTime.Now.ToString("U")} - DiscardSubscription. UserID ({UserID}) UnSubscription from Finerd NotificationHubService
+                                        endpoint: {endpoint}");
             await _subscriptionStore.DiscardSubscriptionAsync(endpoint);
             return NoContent();
         }
@@ -44,6 +48,8 @@ namespace Finerd.Api.Controllers
         [HttpPost("subscriptions/sendMessage")]
         public async Task<IActionResult> SendNotification(string message)
         {
+            _logger.LogInformation($@"{DateTime.Now.ToString("U")} - SendNotification. UserID ({UserID}) Sending Finerd NotificationHubService to all user
+                                    message: {message}");
             await _subscriptionStore.ForEachSubscriptionAsync(
                         async (PushSubscription subscription) => await _pushNotificationService.SendNotificationAsync(subscription, new Lib.Net.Http.WebPush.PushMessage(message))
                     );            

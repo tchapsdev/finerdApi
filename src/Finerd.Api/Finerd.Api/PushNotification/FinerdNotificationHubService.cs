@@ -27,7 +27,7 @@ namespace Finerd.Api.PushNotification
                 storeService.Query()
                                 .ToList()
                                 .ForEach(async x => {
-                                    _logger.LogInformation($"{x.UserId} - {messageToSend}");
+                                    _logger.LogInformation($"{x.UserId} - {message}");
                                     await notifyService.SendNotificationAsync(x, messageToSend);
                                 });
                 await Task.Delay(1000 * 60 * 5);
