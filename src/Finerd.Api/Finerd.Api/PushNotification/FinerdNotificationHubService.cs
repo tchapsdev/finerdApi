@@ -21,6 +21,7 @@ namespace Finerd.Api.PushNotification
                 _logger.LogInformation($"{DateTime.Now.ToString("U")} - Sending Finerd NotificationHubService to user");
                 var message = "Thank you for using Finerd App. This application is free with Ads!";
                 var messageToSend = new Lib.Net.Http.WebPush.PushMessage(message);
+                messageToSend.Topic = "Finerd Ads";
                 using var scope = _serviceScopeFactory.CreateScope();
                 var notifyService = scope.ServiceProvider.GetRequiredService<IPushNotificationService>();
                 var storeService = scope.ServiceProvider.GetRequiredService<IPushSubscriptionStore>();
