@@ -12,8 +12,8 @@
         public string? Photo { get; set; } = "";
 
 
-        public int? PaymentMethodId { get; set; }
-        public string? PaymentMethod { get; set; }
+        //public int? PaymentMethodId { get; set; }
+        //public string? PaymentMethod { get; set; }
 
         public int UserId { get; set; }
     }
