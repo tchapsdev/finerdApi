@@ -3,14 +3,14 @@ namespace Finerd.Api.PushNotification
 {
     public class PushSubscription: Lib.Net.Http.WebPush.PushSubscription
     {
-        public string P256DH
+        public string? P256DH
         {
             get { return GetKey(PushEncryptionKeyName.P256DH); }
 
             set { SetKey(PushEncryptionKeyName.P256DH, value); }
         }
 
-        public string Auth
+        public string? Auth
         {
             get { return GetKey(PushEncryptionKeyName.Auth); }
 
@@ -25,10 +25,6 @@ namespace Finerd.Api.PushNotification
             Endpoint = subscription.Endpoint;
             Keys = subscription.Keys;
         }
-
-        public string Endpoint { get; set; }
-
-        public IDictionary<string, string> Keys { get; set; }
 
         public string? UserId { get; set; }
     }
