@@ -31,10 +31,18 @@ namespace Finerd.Api.Controllers
         [HttpPost("subscriptions")]
         public async Task<IActionResult> StoreSubscription([FromBody] PushSubscription subscription)
         {
-            subscription.UserId = UserID.ToString();
-            await _subscriptionStore.StoreSubscriptionAsync(subscription);
-            _logger.LogInformation($@"{DateTime.Now.ToString("U")} - StoreSubscription. UserID ({UserID}) Subscription to Finerd NotificationHubService
+            try
+            {
+                subscription.UserId = UserID.ToString();
+                await _subscriptionStore.StoreSubscriptionAsync(subscription);
+                _logger.LogInformation($@"{DateTime.Now.ToString("U")} - StoreSubscription. UserID ({UserID}) Subscription to Finerd NotificationHubService
                                             subscription: {JsonConvert.SerializeObject(subscription)}");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+            }
+          
             return NoContent();
         }
 
@@ -42,9 +50,17 @@ namespace Finerd.Api.Controllers
         [HttpDelete("subscriptions")]
         public async Task<IActionResult> DiscardSubscription(string endpoint)
         {
-            _logger.LogInformation($@"{DateTime.Now.ToString("U")} - DiscardSubscription. UserID ({UserID}) UnSubscription from Finerd NotificationHubService
+            try
+            {
+                _logger.LogInformation($@"{DateTime.Now.ToString("U")} - DiscardSubscription. UserID ({UserID}) UnSubscription from Finerd NotificationHubService
                                         endpoint: {endpoint}");
-            await _subscriptionStore.DiscardSubscriptionAsync(endpoint);
+                await _subscriptionStore.DiscardSubscriptionAsync(endpoint);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+            }
+          
             return NoContent();
         }
 
@@ -52,18 +68,26 @@ namespace Finerd.Api.Controllers
         [HttpPost("subscriptions/sendMessage")]
         public async Task<IActionResult> SendNotification(string message)
         {
-            var data = new
+            try
             {
-                Title = "Thank you for choosing finerd",
-                Message = message
-            };            
-            var messageToSend = new Lib.Net.Http.WebPush.PushMessage(JsonConvert.SerializeObject(data));
-            messageToSend.Topic = "Thank you for choosing finerd";
-            _logger.LogInformation($@"{DateTime.Now.ToString("U")} - SendNotification. UserID ({UserID}) Sending Finerd NotificationHubService to all user
+                var data = new
+                {
+                    Title = "Thank you for choosing finerd",
+                    Message = message
+                };
+                var messageToSend = new Lib.Net.Http.WebPush.PushMessage(JsonConvert.SerializeObject(data));
+                messageToSend.Topic = "Thank you for choosing finerd";
+                _logger.LogInformation($@"{DateTime.Now.ToString("U")} - SendNotification. UserID ({UserID}) Sending Finerd NotificationHubService to all user
                                     message: {JsonConvert.SerializeObject(messageToSend)}");
-            await _subscriptionStore.ForEachSubscriptionAsync(
-                        async (PushSubscription subscription) => await _pushNotificationService.SendNotificationAsync(subscription, messageToSend)
-                    );            
+                await _subscriptionStore.ForEachSubscriptionAsync(
+                            async (PushSubscription subscription) => await _pushNotificationService.SendNotificationAsync(subscription, messageToSend)
+                        );
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+            }
+             
             return NoContent();
         }
     }
