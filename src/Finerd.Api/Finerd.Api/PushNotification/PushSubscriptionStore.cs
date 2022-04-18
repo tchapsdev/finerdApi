@@ -4,33 +4,30 @@ namespace Finerd.Api.PushNotification
 {
     internal class PushSubscriptionStore : IPushSubscriptionStore
     {
-        public PushSubscriptionStore()
-        {           
+        private readonly ApplicationDbContext _database;
+
+        public PushSubscriptionStore(ApplicationDbContext database)
+        {
+            _database = database;
         }
 
         public Task StoreSubscriptionAsync(PushSubscription subscription)
         {
-            using (var db = new ApplicationDbContext())
+            if(!_database.PushSubscriptions.Any(p => p.Endpoint == subscription.Endpoint))
             {
-                if (!db.PushSubscriptions.Any(p => p.Endpoint == subscription.Endpoint))
-                {
-                    db.Add(subscription);
-                    db.SaveChanges();
-                }
-            }                  
+                _database.Add(subscription);
+                _database.SaveChanges();
+            }          
             return Task.CompletedTask;
         }
 
         public Task DiscardSubscriptionAsync(string endpoint)
         {
-            using (var db = new ApplicationDbContext())
+            if (_database.PushSubscriptions.Any(p => p.Endpoint == endpoint))
             {
-                if (db.PushSubscriptions.Any(p => p.Endpoint == endpoint))
-                {
-                    db.Remove(endpoint);
-                    db.SaveChanges();
-                }
-            }                    
+                _database.Remove(endpoint);
+                _database.SaveChanges();
+            }           
             return Task.CompletedTask;
         }
 
@@ -41,31 +38,24 @@ namespace Finerd.Api.PushNotification
 
         public IQueryable<PushSubscription> Query()
         {
-            using var db = new ApplicationDbContext();
-            return db.PushSubscriptions.AsQueryable();
+            return _database.PushSubscriptions.AsQueryable();
         }
 
         public Task ForEachSubscriptionAsync(Action<PushSubscription> action, CancellationToken cancellationToken)
         {
-            using (var db = new ApplicationDbContext())
+            foreach (PushSubscription subscription in _database.PushSubscriptions.ToList())
             {
-                foreach (PushSubscription subscription in db.PushSubscriptions.ToList())
-                {
-                    action(subscription);
-                }
-            }           
+                action(subscription);
+            }
             return Task.CompletedTask;
         }
 
         public Task ForEachSubscriptionAsync<T>(Action<PushSubscription, T> action, T param, CancellationToken cancellationToken) where T :class
         {
-            using (var db = new ApplicationDbContext())
+            foreach (PushSubscription subscription in _database.PushSubscriptions.ToList())
             {
-                foreach (PushSubscription subscription in db.PushSubscriptions.ToList())
-                {
-                    action(subscription, param);
-                }
-            }           
+                action(subscription, param);
+            }
             return Task.CompletedTask;
         }
     }

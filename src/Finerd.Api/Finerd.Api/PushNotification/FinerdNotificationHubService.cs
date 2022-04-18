@@ -1,4 +1,5 @@
-﻿using Finerd.Api.Services.Push;
+﻿using Finerd.Api.Data;
+using Finerd.Api.Services.Push;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -34,12 +35,13 @@ namespace Finerd.Api.PushNotification
                     using var scope = _serviceScopeFactory.CreateScope();
                     var notifyService = scope.ServiceProvider.GetRequiredService<IPushNotificationService>();
                     var storeService = scope.ServiceProvider.GetRequiredService<IPushSubscriptionStore>();
-                    storeService.Query()
-                                    .ToList()
-                                    .ForEach(async x => {
-                                        _logger.LogInformation($"{x.UserId} - {message}");
-                                        await notifyService.SendNotificationAsync(x, messageToSend);
-                                    });
+                    List<PushSubscription> pushSubscriptions = storeService.Query().ToList();
+                   
+                    pushSubscriptions.ForEach(async x => {
+                        _logger.LogInformation($"{x.UserId} - {message}");
+                        await notifyService.SendNotificationAsync(x, messageToSend);
+                    });
+
 #if DEBUG
                     await Task.Delay(1000 * 60 * 5);
 #else
