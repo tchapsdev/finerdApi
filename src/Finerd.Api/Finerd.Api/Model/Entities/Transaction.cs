@@ -11,7 +11,7 @@
         public string Photo { get; set; }
 
 
-        public int? PaymentMethodId { get; set; }
+        //public int? PaymentMethodId { get; set; }
 
         public int UserId { get; set; }
         public virtual User User { get; set; }

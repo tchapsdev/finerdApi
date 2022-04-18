@@ -19,10 +19,9 @@ namespace Finerd.Api.Controllers
         private readonly IHubContext<NotificationHub, INotificationClient> _notificationHubContext;
         private readonly IGenericService<Category> _categoryService;
         private readonly IGenericService<TransactionType> _transactionTypeService;
-        private readonly IGenericService<PaymentMethod> _paymentMethodService;
         public TransactionsController(ITransactionService TransactionService, ILogger<HeathController> logger, IMapper mapper, 
             IHubContext<NotificationHub, INotificationClient> notificationHubContext, 
-            IGenericService<Category> categoryService, IGenericService<TransactionType> transactionTypeService, IGenericService<PaymentMethod> paymentMethodService)
+            IGenericService<Category> categoryService, IGenericService<TransactionType> transactionTypeService)
         {
             this.TransactionService = TransactionService;
             _logger = logger;
@@ -30,7 +29,6 @@ namespace Finerd.Api.Controllers
             _notificationHubContext = notificationHubContext;
             _categoryService = categoryService;
             _transactionTypeService = transactionTypeService;
-            _paymentMethodService = paymentMethodService;
         }
 
         [HttpGet]
@@ -54,12 +52,10 @@ namespace Finerd.Api.Controllers
             {
                 var categories = _categoryService.Query().ToList() ?? new List<Category>();
                 var transactionTypes = _transactionTypeService.Query().ToList() ?? new List<TransactionType>();
-                var paymentMethods = _paymentMethodService.Query().ToList() ?? new List<PaymentMethod>();
                 modelDtos.ToList().ForEach(t =>
                 {
                     t.Type = transactionTypes.Where(tp => tp.Id == t.TransactionTypeId).Select(tp => tp.Name).FirstOrDefault();
                     t.Category = categories.Where(c => c.Id == t.CategoryId).Select(c => c.Name).FirstOrDefault();
-                    t.PaymentMethod = paymentMethods.Where(c => c.Id == t.PaymentMethodId).Select(c => c.Name).FirstOrDefault();
                 });
             }
         }
@@ -90,7 +86,7 @@ namespace Finerd.Api.Controllers
             var model = _mapper.Map<Transaction>(transaction);
             await SetTransactionTypeId(transaction, model);
             await SetCategoryId(transaction, model);
-            await SetPaymentMethodId(transaction, model);
+            //await SetPaymentMethodId(transaction, model);
            
             var result = await TransactionService.Save(model, UserID);
             if (!result.Success)
@@ -122,7 +118,7 @@ namespace Finerd.Api.Controllers
             var model = _mapper.Map<Transaction>(transaction);
             await SetTransactionTypeId(transaction, model);
             await SetCategoryId(transaction, model);
-            await SetPaymentMethodId(transaction, model);
+            //await SetPaymentMethodId(transaction, model);
 
             var result = await TransactionService.Save(model, UserID);
             if (!result.Success)
@@ -207,18 +203,18 @@ namespace Finerd.Api.Controllers
             }
             model.TransactionTypeId = transactionType != null ? transactionType.Id : 0;
         }
-        private async Task SetPaymentMethodId(TransactionDto transaction, Transaction model)
-        {
-            if (model.PaymentMethodId > 0)
-                return;
-            var paymentMethod = _paymentMethodService.Query().Where(t => t.Name.Trim().ToLower() == transaction.PaymentMethod?.Trim().ToLower()).FirstOrDefault();
-            if (paymentMethod == null)
-            {
-                if (!string.IsNullOrEmpty(transaction.PaymentMethod))
-                    paymentMethod = await _paymentMethodService.Add(new PaymentMethod { Name = transaction.PaymentMethod.Trim() });
-            }
-            model.PaymentMethodId = paymentMethod?.Id == null || paymentMethod.Id == 0 ? null : paymentMethod.Id;
-        }
+        //private async Task SetPaymentMethodId(TransactionDto transaction, Transaction model)
+        //{
+        //    if (model.PaymentMethodId > 0)
+        //        return;
+        //    var paymentMethod = _paymentMethodService.Query().Where(t => t.Name.Trim().ToLower() == transaction.PaymentMethod?.Trim().ToLower()).FirstOrDefault();
+        //    if (paymentMethod == null)
+        //    {
+        //        if (!string.IsNullOrEmpty(transaction.PaymentMethod))
+        //            paymentMethod = await _paymentMethodService.Add(new PaymentMethod { Name = transaction.PaymentMethod.Trim() });
+        //    }
+        //    model.PaymentMethodId = paymentMethod?.Id == null || paymentMethod.Id == 0 ? null : paymentMethod.Id;
+        //}
         #endregion
 
     }

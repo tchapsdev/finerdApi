@@ -1,7 +1,7 @@
-﻿namespace Finerd.Api.Model.Entities
-{
-    public class PaymentMethod: NamedEntity
-    {
-    }
-}
+﻿//namespace Finerd.Api.Model.Entities
+//{
+//    public class PaymentMethod: NamedEntity
+//    {
+//    }
+//}
 

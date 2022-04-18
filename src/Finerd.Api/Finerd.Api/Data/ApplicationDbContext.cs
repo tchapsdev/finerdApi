@@ -22,7 +22,7 @@ namespace Finerd.Api.Data
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<TransactionType> TransactionTypes { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
+        //public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
 
         public DbSet<PushSubscription> PushSubscriptions { get; set; }
 
@@ -77,11 +77,11 @@ namespace Finerd.Api.Data
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(75);
                 entity.ToTable("TransactionType");
             });
-            modelBuilder.Entity<PaymentMethod>(entity =>
-            {
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(75);
-                entity.ToTable("PaymentMethod");
-            });
+            //modelBuilder.Entity<PaymentMethod>(entity =>
+            //{
+            //    entity.Property(e => e.Name).IsRequired().HasMaxLength(75);
+            //    entity.ToTable("PaymentMethod");
+            //});
             OnModelCreatingPartial(modelBuilder);
 
             

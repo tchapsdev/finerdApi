@@ -68,7 +68,6 @@ namespace Finerd.Api.Services
                 }
                 model.Amount = transaction.Amount;
                 model.CategoryId = transaction.CategoryId;
-                model.PaymentMethodId = transaction.PaymentMethodId;
                 model.TransactionTypeId = transaction.TransactionTypeId;
                 if (!string.IsNullOrEmpty(transaction.Photo))
                     model.Photo = transaction.Photo;

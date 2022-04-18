@@ -117,7 +117,6 @@ using Microsoft.OpenApi.Models;
 
     builder.Services.AddScoped<IGenericService<Category>, GenericService<Category>>();
     builder.Services.AddScoped<IGenericService<TransactionType>, GenericService<TransactionType>>();
-    builder.Services.AddScoped<IGenericService<PaymentMethod>, GenericService<PaymentMethod>>();
     //builder.Services.AddScoped<IGenericService<PushSubscription>, GenericService<PushSubscription>>();
 
     builder.Services.Configure<PushNotificationServiceOptions>(builder.Configuration.GetSection("VAPID"));
@@ -131,8 +130,8 @@ using Microsoft.OpenApi.Models;
     //    options.PrivateKey = pushNotificationServiceConfigurationSection.GetValue<string>(nameof(options.PrivateKey));
     //});
 
-// CORS with default policy and middleware
-builder.Services.AddCors(options =>
+    // CORS with default policy and middleware
+    builder.Services.AddCors(options =>
     {
         options.AddDefaultPolicy(
             policy =>
