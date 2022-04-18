@@ -4,6 +4,7 @@ using Finerd.Api.Model;
 using Finerd.Api.Model.Entities;
 using Finerd.Api.PushNotification;
 using Finerd.Api.Services;
+using Finerd.Api.Services.Push;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -100,19 +101,29 @@ using Microsoft.OpenApi.Models;
     });
 
     builder.Services.AddScoped<ITokenService, TokenService>();
-    builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultDbConnectionString")));
+    builder.Services.AddDbContext<ApplicationDbContext>(
+        options => {
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultDbConnectionString"));
+        }
+    );
+
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<ITransactionService, TransactionService>();
-    builder.Services.AddScoped<IPushNotificationService, WebPushPushNotificationService>();
+    builder.Services.AddScoped<IPushNotificationService, PushServicePushNotificationService>();
+
+    builder.Services.AddTransient<IPushSubscriptionStore, PushSubscriptionStore>();
+    builder.Services.AddTransient<IPushSubscriptionStoreAccessor, PushSubscriptionStoreAccessor>();
+    builder.Services.AddTransient<IPushSubscriptionStoreAccessorProvider, PushSubscriptionStoreAccessorProvider>();
 
     builder.Services.AddScoped<IGenericService<Category>, GenericService<Category>>();
     builder.Services.AddScoped<IGenericService<TransactionType>, GenericService<TransactionType>>();
     builder.Services.AddScoped<IGenericService<PaymentMethod>, GenericService<PaymentMethod>>();
+    //builder.Services.AddScoped<IGenericService<PushSubscription>, GenericService<PushSubscription>>();
 
     builder.Services.Configure<PushNotificationServiceOptions>(builder.Configuration.GetSection("VAPID"));
 
-// CORS with default policy and middleware
-builder.Services.AddCors(options =>
+    // CORS with default policy and middleware
+    builder.Services.AddCors(options =>
     {
         options.AddDefaultPolicy(
             policy =>
@@ -152,6 +163,7 @@ builder.Services.AddCors(options =>
     });
 
     builder.Services.AddHostedService<FinerdHubService>();
+    builder.Services.AddHostedService<FinerdNotificationHubService>();
 
 
     var app = builder.Build();
@@ -186,4 +198,12 @@ app.UseCors();
 
     app.MapControllers();
 
-    app.Run();
+    // migrate any database changes on startup (includes initial db creation)
+    using (var scope = app.Services.CreateScope())
+    {
+        var dataContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        dataContext.Database.Migrate();
+    }
+
+
+app.Run();

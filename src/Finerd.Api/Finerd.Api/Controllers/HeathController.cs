@@ -9,18 +9,14 @@ namespace Finerd.Api.Controllers
     {
         private readonly ILogger<HeathController> _logger;
 
-        private readonly IPushNotificationService _pushNotificationService;
-
-        public HeathController(ILogger<HeathController> logger, IPushNotificationService pushNotificationService)
+        public HeathController(ILogger<HeathController> logger)
         {
             _logger = logger;
-            _pushNotificationService = pushNotificationService;
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            var x = _pushNotificationService.SendNotification(new PushNotification.PushSubscription { }, "paylod");
             return Ok(new
             {
                 Application = "Finerd",

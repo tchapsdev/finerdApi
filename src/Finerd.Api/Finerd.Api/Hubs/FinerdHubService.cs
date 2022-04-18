@@ -4,14 +4,11 @@ namespace Finerd.Api.Hubs
 {
     public class FinerdHubService: BackgroundService
     {
-        //private readonly IHubContext<NotificationHub> _hubContext;
         private readonly ILogger<FinerdHubService> _logger;
         private readonly IHubContext<NotificationHub, INotificationClient> _notificationHubContext;
         public FinerdHubService(
-            //IHubContext<NotificationHub> hubContext, 
             ILogger<FinerdHubService> logger,  IHubContext<NotificationHub, INotificationClient> notificationHubContext)
         {
-            //_hubContext = hubContext;
             _logger = logger;
             _notificationHubContext = notificationHubContext;
         }

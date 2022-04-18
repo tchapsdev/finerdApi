@@ -1,5 +1,6 @@
 ﻿using Finerd.Api.Model;
 using Finerd.Api.Model.Entities;
+using Finerd.Api.PushNotification;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finerd.Api.Data
@@ -23,8 +24,16 @@ namespace Finerd.Api.Data
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
 
+        public DbSet<PushSubscription> PushSubscriptions { get; set; }
+
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            var pushSubscriptionEntityTypeBuilder = modelBuilder.Entity<PushSubscription>();
+            pushSubscriptionEntityTypeBuilder.HasKey(e => e.Endpoint);
+            pushSubscriptionEntityTypeBuilder.Ignore(p => p.Keys);
+
             modelBuilder.Entity<RefreshToken>(entity =>
             {
                 entity.Property(e => e.ExpiryDate).HasColumnType("smalldatetime");
@@ -74,6 +83,8 @@ namespace Finerd.Api.Data
                 entity.ToTable("PaymentMethod");
             });
             OnModelCreatingPartial(modelBuilder);
+
+            
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
