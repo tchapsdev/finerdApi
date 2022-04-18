@@ -44,10 +44,9 @@ namespace Finerd.Api.Controllers
         [HttpPost("subscriptions/sendMessage")]
         public async Task<IActionResult> SendNotification(string message)
         {
-            var messageToSend = new Lib.Net.Http.WebPush.PushMessage(message);
-            _subscriptionStore.Query()
-                            .ToList()
-                            .ForEach(async x => await _pushNotificationService.SendNotificationAsync(x, messageToSend));
+            await _subscriptionStore.ForEachSubscriptionAsync(
+                        async (PushSubscription subscription) => await _pushNotificationService.SendNotificationAsync(subscription, new Lib.Net.Http.WebPush.PushMessage(message))
+                    );            
             return NoContent();
         }
     }
