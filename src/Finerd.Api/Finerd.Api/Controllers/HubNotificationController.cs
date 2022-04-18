@@ -7,6 +7,7 @@ namespace Finerd.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class HubNotificationController : ControllerBase
     {
         //IHubContext<NotificationHub> _hubContext;

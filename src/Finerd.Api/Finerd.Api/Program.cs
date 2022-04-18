@@ -162,7 +162,7 @@ using Microsoft.OpenApi.Models;
         hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(6);
     });
 
-    builder.Services.AddHostedService<FinerdHubService>();
+    //builder.Services.AddHostedService<FinerdHubService>();
     builder.Services.AddHostedService<FinerdNotificationHubService>();
 
 
