@@ -56,11 +56,8 @@ namespace Finerd.Api.Controllers
             {
                 Title = "Thank you for choosing finerd",
                 Message = message
-            };
-            var ContentMessage = new StringContent($"{JsonConvert.SerializeObject(data)}",
-                                    Encoding.UTF8,
-                                    "application/json");//CONTENT-TYPE header;
-            var messageToSend = new Lib.Net.Http.WebPush.PushMessage(ContentMessage);
+            };            
+            var messageToSend = new Lib.Net.Http.WebPush.PushMessage(JsonConvert.SerializeObject(data));
             messageToSend.Topic = "Thank you for choosing finerd";
             _logger.LogInformation($@"{DateTime.Now.ToString("U")} - SendNotification. UserID ({UserID}) Sending Finerd NotificationHubService to all user
                                     message: {JsonConvert.SerializeObject(messageToSend)}");

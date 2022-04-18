@@ -122,8 +122,17 @@ using Microsoft.OpenApi.Models;
 
     builder.Services.Configure<PushNotificationServiceOptions>(builder.Configuration.GetSection("VAPID"));
 
-    // CORS with default policy and middleware
-    builder.Services.AddCors(options =>
+    //builder.Services.AddPushServiceClient(options =>
+    //{
+    //    IConfigurationSection pushNotificationServiceConfigurationSection = builder.Configuration.GetSection("VAPID");
+
+    //    options.Subject = pushNotificationServiceConfigurationSection.GetValue<string>(nameof(options.Subject));
+    //    options.PublicKey = pushNotificationServiceConfigurationSection.GetValue<string>(nameof(options.PublicKey));
+    //    options.PrivateKey = pushNotificationServiceConfigurationSection.GetValue<string>(nameof(options.PrivateKey));
+    //});
+
+// CORS with default policy and middleware
+builder.Services.AddCors(options =>
     {
         options.AddDefaultPolicy(
             policy =>

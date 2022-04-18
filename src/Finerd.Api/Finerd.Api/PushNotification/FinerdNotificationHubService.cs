@@ -26,12 +26,8 @@ namespace Finerd.Api.PushNotification
                 {
                     Title = "Thank you for choosing finerd",
                     Message = message
-                };
-                var ContentMessage = new StringContent($"{JsonConvert.SerializeObject(data)}",
-                                        Encoding.UTF8,
-                                        "application/json");//CONTENT-TYPE header;
-                var messageToSend = new Lib.Net.Http.WebPush.PushMessage(ContentMessage);
-                
+                };               
+                var messageToSend = new Lib.Net.Http.WebPush.PushMessage(JsonConvert.SerializeObject(data));                
                 messageToSend.Topic = "Thank you for choosing finerd";
                 using var scope = _serviceScopeFactory.CreateScope();
                 var notifyService = scope.ServiceProvider.GetRequiredService<IPushNotificationService>();
