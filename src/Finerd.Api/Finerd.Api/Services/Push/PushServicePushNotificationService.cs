@@ -33,6 +33,12 @@ namespace Finerd.Api.Services.Push
             return SendNotificationAsync(subscription, message, CancellationToken.None);
         }
 
+        public async Task SendNotificationAsync(IList<PushSubscription> subscriptions, PushMessage message)
+        {
+            foreach (var subscription in subscriptions)
+                await SendNotificationAsync(subscription, message, CancellationToken.None);           
+        }
+
         public async Task SendNotificationAsync(PushSubscription subscription, PushMessage message, CancellationToken cancellationToken)
         {
             try
@@ -49,23 +55,31 @@ namespace Finerd.Api.Services.Push
 
         private async Task HandlePushMessageDeliveryExceptionAsync(Exception exception, PushSubscription subscription)
         {
-            PushServiceClientException pushServiceClientException = exception as PushServiceClientException;
+            try
+            {
+                PushServiceClientException pushServiceClientException = exception as PushServiceClientException;
 
-            if (pushServiceClientException is null)
-            {
-                _logger?.LogError(exception, "Failed requesting push message delivery to {0}.", subscription.Endpoint);
-            }
-            else
-            {
-                if ((pushServiceClientException.StatusCode == HttpStatusCode.NotFound) || (pushServiceClientException.StatusCode == HttpStatusCode.Gone))
+                if (pushServiceClientException is null)
                 {
-                    using (IPushSubscriptionStoreAccessor subscriptionStoreAccessor = _subscriptionStoreAccessorProvider.GetPushSubscriptionStoreAccessor())
+                    _logger?.LogError(exception, "Failed requesting push message delivery to {0}.", subscription.Endpoint);
+                }
+                else
+                {
+                    if ((pushServiceClientException.StatusCode == HttpStatusCode.NotFound) || (pushServiceClientException.StatusCode == HttpStatusCode.Gone))
                     {
-                        await subscriptionStoreAccessor.PushSubscriptionStore.DiscardSubscriptionAsync(subscription.Endpoint);
+                        using (IPushSubscriptionStoreAccessor subscriptionStoreAccessor = _subscriptionStoreAccessorProvider.GetPushSubscriptionStoreAccessor())
+                        {
+                            await subscriptionStoreAccessor.PushSubscriptionStore.DiscardSubscriptionAsync(subscription.Endpoint);
+                        }
+                        _logger?.LogInformation("Subscription has expired or is no longer valid and has been removed.");
                     }
-                    _logger?.LogInformation("Subscription has expired or is no longer valid and has been removed.");
                 }
             }
+            catch (Exception ex)
+            {
+
+                _logger.LogError(ex.Message, ex);
+            }           
         }
 
         private HttpClient GetHttpClientHeader()

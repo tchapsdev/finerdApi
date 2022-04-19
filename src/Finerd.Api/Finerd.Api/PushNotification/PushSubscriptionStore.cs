@@ -58,5 +58,12 @@ namespace Finerd.Api.PushNotification
             }
             return Task.CompletedTask;
         }
+
+        public Task ProcessAllSubscriptionAsync<T>(Action<IList<PushSubscription>, T> action, T param, CancellationToken cancellationToken) where T : class
+        {
+            var subscripList = _database.PushSubscriptions.ToList();
+            action(subscripList, param);
+            return Task.CompletedTask;
+        }
     }
 }
