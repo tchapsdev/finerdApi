@@ -1,11 +1,14 @@
 ﻿using Finerd.Api.Hubs;
 using Finerd.Api.Model;
 using Finerd.Api.Model.Responses;
+using Finerd.Api.PushNotification;
 using Finerd.Api.Services;
+using Finerd.Api.Services.Push;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 
 namespace Finerd.Api.Controllers
 {
@@ -17,13 +20,18 @@ namespace Finerd.Api.Controllers
         private readonly ITokenService tokenService;
         private readonly ILogger<UsersController> _logger;
         private readonly IHubContext<NotificationHub, INotificationClient> _notificationHubContext;
+        private readonly IPushSubscriptionStore _subscriptionStore;
+        private readonly IPushNotificationService _pushNotificationService;
 
-        public UsersController(IUserService userService, ITokenService tokenService, ILogger<UsersController> logger, IHubContext<NotificationHub, INotificationClient> notificationHubContext)
+        public UsersController(IUserService userService, ITokenService tokenService, ILogger<UsersController> logger, IHubContext<NotificationHub, 
+            INotificationClient> notificationHubContext, IPushSubscriptionStore subscriptionStore, IPushNotificationService pushNotificationService)
         {
             this.userService = userService;
             this.tokenService = tokenService;
             _logger = logger;
             _notificationHubContext = notificationHubContext;
+            _subscriptionStore = subscriptionStore;
+            _pushNotificationService = pushNotificationService;
         }
 
         [HttpGet]
@@ -64,6 +72,27 @@ namespace Finerd.Api.Controllers
                 return UnprocessableEntity(signupResponse);
             }
             await _notificationHubContext.Clients.Group($"G{signupResponse.Id}").ReceiveMessage(signupRequest.FirstName, "Your account was created. Please confirm your email");
+            try
+            {
+                var user = await userService.GetByEmailAsync(signupRequest.Email) ?? new Model.Entities.User();
+                var data = new
+                {
+                    Title = "SignUp notification",
+                    Message = "Please Signin to start adding your daily transaction to track"
+                };
+                var messageToSend = new Lib.Net.Http.WebPush.PushMessage(JsonConvert.SerializeObject(data));
+                messageToSend.Topic = "Information";
+                _logger.LogInformation($@"{DateTime.Now.ToString("U")} - SendNotification. UserID ({UserID}) Sending Finerd NotificationHubService to all user
+                                    message: {JsonConvert.SerializeObject(messageToSend)}");
+                await _subscriptionStore.ForEachSubscriptionAsync(
+                            async (PushSubscription subscription) => await _pushNotificationService.SendNotificationAsync(subscription, messageToSend)
+                        );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                // throw;
+            }
 
             return Ok(signupResponse);
         }
@@ -120,6 +149,28 @@ namespace Finerd.Api.Controllers
                     loginResponse.Error
                 });
             }
+            try
+            {
+                var user = await userService.GetByEmailAsync(loginRequest.Email) ?? new Model.Entities.User();
+                var data = new
+                {
+                    Title = "Welcome " + user.FirstName,
+                    Message = "Please add your daily transaction to track your money activities"
+                };
+                var messageToSend = new Lib.Net.Http.WebPush.PushMessage(JsonConvert.SerializeObject(data));
+                messageToSend.Topic = "Information";
+                _logger.LogInformation($@"{DateTime.Now.ToString("U")} - SendNotification. UserID ({UserID}) Sending Finerd NotificationHubService to all user
+                                    message: {JsonConvert.SerializeObject(messageToSend)}");
+                await _subscriptionStore.ForEachSubscriptionAsync(
+                            async (PushSubscription subscription) => await _pushNotificationService.SendNotificationAsync(subscription, messageToSend)
+                        );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+               // throw;
+            }
+          
 
             return Ok(loginResponse);
         }

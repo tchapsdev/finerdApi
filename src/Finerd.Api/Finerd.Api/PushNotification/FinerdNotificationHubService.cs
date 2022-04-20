@@ -45,7 +45,7 @@ namespace Finerd.Api.PushNotification
 #if DEBUG
                     await Task.Delay(1000 * 60 * 5);
 #else
-                await Task.Delay(1000 * 60 * 10);
+                await Task.Delay(1000 * 60 * 600);
 #endif
                 }
                 catch (Exception e)
