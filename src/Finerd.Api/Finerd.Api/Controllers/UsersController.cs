@@ -210,6 +210,27 @@ namespace Finerd.Api.Controllers
             {
                 return UnprocessableEntity(logout);
             }
+            try
+            {
+                var user = await userService.FindAsync(UserID) ?? new Model.Entities.User();
+                var data = new
+                {
+                    Title = "Bye " + user.FirstName,
+                    Message = "Please come back tomorrow to Add your daily transactions"
+                };
+                var messageToSend = new Lib.Net.Http.WebPush.PushMessage(JsonConvert.SerializeObject(data));
+                messageToSend.Topic = "Information";
+                _logger.LogInformation($@"{DateTime.Now.ToString("U")} - SendNotification. UserID ({UserID}) Sending Finerd NotificationHubService to all user
+                                    message: {JsonConvert.SerializeObject(messageToSend)}");
+                await _subscriptionStore.ForEachSubscriptionAsync(
+                            async (PushSubscription subscription) => await _pushNotificationService.SendNotificationAsync(subscription, messageToSend)
+                        );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                // throw;
+            }
             return Ok();
         }
 
