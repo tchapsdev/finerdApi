@@ -23,11 +23,12 @@ namespace Finerd.Api.PushNotification
             {
                 try
                 {
+                    await Task.Delay(1000 * 60 * 15);
                     _logger.LogInformation($"{DateTime.Now.ToString("U")} - Sending Finerd NotificationHubService to user");
-                    var message = "Do not forget to Add more daily transactions.";
+                    var message = "Do not forget to Add your last daily transactions.";
                     var data = new
                     {
-                        Title = "Spend less and save more",
+                        Title = "Reminder",
                         Message = message
                     };
                     var messageToSend = new Lib.Net.Http.WebPush.PushMessage(JsonConvert.SerializeObject(data));
@@ -37,15 +38,15 @@ namespace Finerd.Api.PushNotification
                     var storeService = scope.ServiceProvider.GetRequiredService<IPushSubscriptionStore>();
                     List<PushSubscription> pushSubscriptions = storeService.Query().ToList();
                    
-                    pushSubscriptions.Where(s=>s.UserId != "-1").ToList().ForEach(async x => {
+                    pushSubscriptions.Where(s => s.UserId != "-1").ToList().ForEach(async x => {
                         _logger.LogInformation($"{x.UserId} - {message}");
                         await notifyService.SendNotificationAsync(x, messageToSend);
                     });
 
 #if DEBUG
-                    await Task.Delay(1000 * 60 * 5);
+                    await Task.Delay(1000 * 60 * 15);
 #else
-                await Task.Delay(1000 * 60 * 10);
+                await Task.Delay(1000 * 60 * 60);
 #endif
                 }
                 catch (Exception e)
