@@ -13,7 +13,13 @@ namespace Finerd.Api.PushNotification
 
         public Task StoreSubscriptionAsync(PushSubscription subscription)
         {
-            if(!_database.PushSubscriptions.Any(p => p.Endpoint == subscription.Endpoint))
+            if (_database.PushSubscriptions.Any(p => p.Endpoint == subscription.Endpoint && p.UserId == "-1"))
+            {
+                _database.Remove(subscription.Endpoint);
+                _database.SaveChanges();
+            }
+
+            if (!_database.PushSubscriptions.Any(p => p.Endpoint == subscription.Endpoint))
             {
                 _database.Add(subscription);
                 _database.SaveChanges();

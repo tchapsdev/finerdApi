@@ -71,7 +71,7 @@ namespace Finerd.Api.Controllers
             {
                 return UnprocessableEntity(signupResponse);
             }
-            await _notificationHubContext.Clients.Group($"G{signupResponse.Id}").ReceiveMessage(signupRequest.FirstName, "Your account was created. Please confirm your email");
+            await _notificationHubContext.Clients.Group($"G{signupResponse.Id}").ReceiveMessage(signupRequest.FirstName, "Your account was created.");
             try
             {
                 var user = await userService.GetByEmailAsync(signupRequest.Email) ?? new Model.Entities.User();
@@ -91,7 +91,6 @@ namespace Finerd.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, ex);
-                // throw;
             }
 
             return Ok(signupResponse);
@@ -168,7 +167,6 @@ namespace Finerd.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, ex);
-               // throw;
             }
           
 
@@ -215,7 +213,7 @@ namespace Finerd.Api.Controllers
                 var user = await userService.FindAsync(UserID) ?? new Model.Entities.User();
                 var data = new
                 {
-                    Title = "Bye " + user.FirstName,
+                    Title = "Money Tracker ",
                     Message = "Please come back tomorrow to Add your daily transactions"
                 };
                 var messageToSend = new Lib.Net.Http.WebPush.PushMessage(JsonConvert.SerializeObject(data));
@@ -229,7 +227,6 @@ namespace Finerd.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, ex);
-                // throw;
             }
             return Ok();
         }

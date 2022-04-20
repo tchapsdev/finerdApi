@@ -24,20 +24,20 @@ namespace Finerd.Api.PushNotification
                 try
                 {
                     _logger.LogInformation($"{DateTime.Now.ToString("U")} - Sending Finerd NotificationHubService to user");
-                    var message = "This application is free with Ads! Support us accepting ads in this Apps";
+                    var message = "Do not forget to Add more daily transactions.";
                     var data = new
                     {
-                        Title = "Thank you for choosing finerd",
+                        Title = "Spend less and save more",
                         Message = message
                     };
                     var messageToSend = new Lib.Net.Http.WebPush.PushMessage(JsonConvert.SerializeObject(data));
-                    messageToSend.Topic = "Thank you for choosing finerd";
+                    messageToSend.Topic = "Login notification";
                     using var scope = _serviceScopeFactory.CreateScope();
                     var notifyService = scope.ServiceProvider.GetRequiredService<IPushNotificationService>();
                     var storeService = scope.ServiceProvider.GetRequiredService<IPushSubscriptionStore>();
                     List<PushSubscription> pushSubscriptions = storeService.Query().ToList();
                    
-                    pushSubscriptions.ForEach(async x => {
+                    pushSubscriptions.Where(s=>s.UserId != "-1").ToList().ForEach(async x => {
                         _logger.LogInformation($"{x.UserId} - {message}");
                         await notifyService.SendNotificationAsync(x, messageToSend);
                     });
@@ -45,7 +45,7 @@ namespace Finerd.Api.PushNotification
 #if DEBUG
                     await Task.Delay(1000 * 60 * 5);
 #else
-                await Task.Delay(1000 * 60 * 600);
+                await Task.Delay(1000 * 60 * 10);
 #endif
                 }
                 catch (Exception e)

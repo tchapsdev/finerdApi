@@ -37,12 +37,18 @@ namespace Finerd.Api.Controllers
                 await _subscriptionStore.StoreSubscriptionAsync(subscription);
                 _logger.LogInformation($@"{DateTime.Now.ToString("U")} - StoreSubscription. UserID ({UserID}) Subscription to Finerd NotificationHubService
                                             subscription: {JsonConvert.SerializeObject(subscription)}");
+                var data = new
+                {
+                    Title = "Information",
+                    Message = "Thank you for subscribing to our push notification service"
+                };
+                var messageToSend = new Lib.Net.Http.WebPush.PushMessage(JsonConvert.SerializeObject(data));
+                await _pushNotificationService.SendNotificationAsync(subscription, messageToSend);
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-            }
-          
+            }          
             return NoContent();
         }
 
@@ -59,8 +65,7 @@ namespace Finerd.Api.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-            }
-          
+            }          
             return NoContent();
         }
 
@@ -72,11 +77,11 @@ namespace Finerd.Api.Controllers
             {
                 var data = new
                 {
-                    Title = "Thank you for choosing finerd",
+                    Title = "Information",
                     Message = message
                 };
                 var messageToSend = new Lib.Net.Http.WebPush.PushMessage(JsonConvert.SerializeObject(data));
-                messageToSend.Topic = "Thank you for choosing finerd";
+                messageToSend.Topic = "Information";
                 _logger.LogInformation($@"{DateTime.Now.ToString("U")} - SendNotification. UserID ({UserID}) Sending Finerd NotificationHubService to all user
                                     message: {JsonConvert.SerializeObject(messageToSend)}");
                 await _subscriptionStore.ForEachSubscriptionAsync(
@@ -86,8 +91,7 @@ namespace Finerd.Api.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-            }
-             
+            }             
             return NoContent();
         }
     }
