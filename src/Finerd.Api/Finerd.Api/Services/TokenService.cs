@@ -129,7 +129,7 @@ namespace Finerd.Api.Services
             var claimsIdentity = new ClaimsIdentity(new[] {
                 new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
                 //new Claim(ClaimTypes.Email, userRecord.Email),
-                //new Claim(ClaimTypes.Name, userRecord.FirstName),
+                new Claim(ClaimTypes.Name, userRecord.FirstName),
                 //new Claim(ClaimTypes.GivenName, userRecord.FirstName),
                 //new Claim(ClaimTypes.Surname, userRecord.LastName),
                 new Claim(ClaimTypes.Sid, userId.ToString())
